@@ -3,29 +3,33 @@ name: Build and Release JAR
 on:
   push:
     tags:
-      - 'v*.*.*-*'   # matches tags like v0.2.0-alpha, v1.0.0-beta
+      - 'v*.*.**'       # matches v0.2.1, v0.2.1-alpha, v1.0.0-beta
 
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Checkout repository
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # 2. Set up JDK 17
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: '17'
 
+      # 3. Build the project with Maven
       - name: Build with Maven
         run: mvn -B -DskipTests clean package
 
-      - name: Create GitHub Release and upload JAR
+      # 4. Create GitHub Release and upload JAR
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: target/*.jar     # path to your JAR file
-          prerelease: true        # marks it as a pre-release
+          files: target/*.jar             # Path to your JAR
+          prerelease: ${{ contains(github.ref, '-alpha') || contains(github.ref, '-beta') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
