@@ -7,8 +7,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v3
 
       - name: Set up JDK 17
@@ -22,7 +23,3 @@ jobs:
 
       - name: Upload JAR to GitHub Release
         uses: softprops/action-gh-release@v1
-        with:
-          files: target/*.jar
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
